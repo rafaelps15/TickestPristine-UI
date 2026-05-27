@@ -1,6 +1,6 @@
 # TickestPristine-UI
 
-Este projeto foi gerado com o [Angular CLI](https://github.com/angular/angular-cli) versão 16.x.x.
+Este projeto foi gerado com o [Angular CLI](https://github.com/angular/angular-cli) versão 18.2.6.
 
 ## Servidor de desenvolvimento
 
