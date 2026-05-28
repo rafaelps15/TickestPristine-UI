@@ -1,6 +1,6 @@
 import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
 import { provideServerRendering } from '@angular/platform-server';
-import { appConfig } from '../core/config/app.config';
+import { appConfig } from './app.config';
 
 const serverConfig: ApplicationConfig = {
   providers: [
@@ -9,3 +9,4 @@ const serverConfig: ApplicationConfig = {
 };
 
 export const config = mergeApplicationConfig(appConfig, serverConfig);
+

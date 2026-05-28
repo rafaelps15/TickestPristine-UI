@@ -1,0 +1,69 @@
+<div class="page-container">
+    <div class="brand-header">
+        <h1>Tickest</h1>
+        <p>Sistema de tickets e solicitações internas</p>
+    </div>
+
+    <div class="register-card">
+        <h2>Novo Cadastro</h2>
+
+        <div *ngIf="usersService.error()" class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ usersService.error() }}
+        </div>
+
+        <div *ngIf="usersService.success()" class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Usuário cadastrado com sucesso!
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input id="name" type="text" formControlName="name" placeholder="Ex: João Silva">
+                <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="error-message">
+                    <small>Nome é obrigatório (mín. 3 caracteres).</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail Corporativo</label>
+                <input id="email" type="email" formControlName="email" placeholder="nome@empresa.com">
+                <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid" class="error-message">
+                    <small>Insira um e-mail corporativo válido.</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha de Acesso</label>
+                <input id="password" type="password" formControlName="password" placeholder="Crie uma senha forte">
+                
+                <div *ngIf="form.get('password')?.touched && form.get('password')?.invalid" class="error-message">
+                    <small *ngIf="form.get('password')?.errors?.['required']">A senha é obrigatória.</small>
+                    <small *ngIf="form.get('password')?.errors?.['minlength']">Deve conter ao menos 8 caracteres.</small>
+                    <small *ngIf="form.get('password')?.errors?.['pattern']">Requer um caractere especial (!&#64;#$...).</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Departamento / Perfil</label>
+                <select id="role" formControlName="roleId">
+                    <option value="" disabled selected>Selecione seu cargo...</option>
+                    <option *ngFor="let role of rolesService.roles()" [value]="role.id">
+                        {{ role.name }}
+                    </option>
+                </select>
+                <div *ngIf="rolesService.loading()" class="error-message">
+                    <small style="color: var(--brand-secondary)">Sincronizando departamentos...</small>
+                </div>
+            </div>
+
+            <button type="submit" [disabled]="form.invalid || usersService.loading()">
+                <span *ngIf="!usersService.loading()">Criar Conta Tickest</span>
+                <span *ngIf="usersService.loading()">Processando cadastro...</span>
+            </button>
+
+        </form>
+    </div>
+</div>
