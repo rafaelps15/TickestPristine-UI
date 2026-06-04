@@ -1,37 +1,33 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { RoleRepository } from "../../domain/interfaces/role.repository";
-import { Role } from "../../core/models/role.model";
+import { Role } from "../../domain/entities/role.entity";
+import { finalize } from "rxjs";
 
-/**
- * Serviço de Aplicação para gerenciamento de Papéis (Roles).
- * Atua como orquestrador, utilizando o contrato do repositório para buscar dados
- * e expondo estados reativos (Signals) para que a UI possa reagir às mudanças.
- */
-@Injectable({
-    providedIn: 'root'
-})
+/** Serviço de aplicação para orquestração de operações relacionadas a papéis. */
+@Injectable({ providedIn: 'root' })
 export class RolesService {
-    /** 
-     * Injeção da abstração (Interface). O Angular resolverá para a implementação 
-     * correta definida no app.config.ts (Inversão de Dependência).
-     */
-    private roleRepository = inject(RoleRepository);
+  private readonly repository = inject(RoleRepository);
 
-    // Estados Reativos (Signals) do Angular 18
-    roles = signal<Role[]>([]);    // Lista de papéis carregados
-    loading = signal(false);       // Indica se há uma operação em andamento
+  state = signal({
+    data: [] as Role[],
+    loading: false,
+    error: null as string | null
+  });
 
-    /**
-     * Carrega a lista de papéis e atualiza o estado reativo.
-     */
-    loadRoles() {
-        this.loading.set(true);
-        this.roleRepository.getAll().subscribe({
-            next: (result) => {
-                if (result.IsSuccess) this.roles.set(result.value);
-                this.loading.set(false);
-            },
-            error: () => this.loading.set(false)
-        });
-    }
+  loadRoles() {
+    this.state.update(s => ({ ...s, loading: true, error: null }));
+
+    this.repository.getAll()
+      .pipe(finalize(() => this.state.update(s => ({ ...s, loading: false }))))
+      .subscribe({
+        next: (res) => {
+          if (res.IsSuccess) {
+            this.state.update(s => ({ ...s, data: res.value }));
+          } else {
+            this.state.update(s => ({ ...s, error: res.errorResult.message }));
+          }
+        },
+        error: () => this.state.update(s => ({ ...s, error: 'Erro ao carregar papéis' }))
+      });
+  }
 }

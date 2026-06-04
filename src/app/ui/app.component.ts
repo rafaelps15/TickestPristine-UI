@@ -1,14 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { UserRegisterComponent } from './features/user/user-register/user-register.component';
 
+/** Componente principal que atua como host das rotas da aplicação. */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, UserRegisterComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [RouterOutlet],
+  template: `<router-outlet />`
 })
-export class AppComponent {
-  title = 'TickestPristine';
-}
+export class AppComponent { }

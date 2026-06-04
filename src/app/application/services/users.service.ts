@@ -1,37 +1,37 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { UserRepository } from "../../domain/interfaces/user.repository";
-import { CreateUserRequest } from "../../core/models/create-user-request.model";
-import { catchError, finalize, of } from "rxjs";
+import { CreateUserRequest } from "../../infrastructure/models/create-user-request.dto";
+import { finalize } from "rxjs";
 
-// Service responsável por gerenciar as operações relacionadas aos usuários, como criação, atualização e exclusão. Ele utiliza o UserRepository para
-// realizar as operações de persistência e mantém sinais para controlar o estado de carregamento, sucesso e erros.
-@Injectable({
-    providedIn: 'root'
-})
+/** Serviço de aplicação para orquestração de operações relacionadas a usuários. */
+@Injectable({ providedIn: 'root' })
 export class UsersService {
-    private repository = inject(UserRepository);
+  private readonly repository = inject(UserRepository);
 
-    loading = signal(false);
-    success = signal(false);
-    error = signal<string | null>(null);
+  state = signal({
+    loading: false,
+    success: false,
+    error: null as string | null
+  });
 
-    createUser(data: CreateUserRequest) {
-        this.loading.set(true);
-        this.success.set(false);
-        this.error.set(null);
+  createUser(data: CreateUserRequest) {
+    this.state.update(s => ({ ...s, loading: true, success: false, error: null }));
 
-        this.repository.createUser(data).pipe(
-            finalize(() => this.loading.set(false)),
-            catchError(err => {
-                this.error.set('Erro inesperado ao criar usuário');
-                return of(null);
-            })
-        ).subscribe(result => {
-            if (result?.IsSuccess) {
-                this.success.set(true);
-            } else if (result?.IsFailure) {
-                this.error.set(result.errorResult.message || 'Erro ao criar usuário');
-            }
-        });
-    }
+    this.repository.createUser(data)
+      .pipe(finalize(() => this.state.update(s => ({ ...s, loading: false }))))
+      .subscribe({
+        next: (res) => {
+          if (res.IsSuccess) {
+            this.state.update(s => ({ ...s, success: true }));
+          } else {
+            this.state.update(s => ({ ...s, error: res.errorResult.message }));
+          }
+        },
+        error: () => this.state.update(s => ({ ...s, error: 'Erro inesperado ao criar usuário' }))
+      });
+  }
+
+  resetState() {
+    this.state.set({ loading: false, success: false, error: null });
+  }
 }

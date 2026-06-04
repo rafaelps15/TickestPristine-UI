@@ -7,12 +7,12 @@
     <div class="register-card">
         <h2>Novo Cadastro</h2>
 
-        <div *ngIf="usersService.error()" class="alert alert-error">
+        <div *ngIf="usersService.state().error" class="alert alert-error">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            {{ usersService.error() }}
+            {{ usersService.state().error }}
         </div>
 
-        <div *ngIf="usersService.success()" class="alert alert-success">
+        <div *ngIf="usersService.state().success" class="alert alert-success">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             Usuário cadastrado com sucesso!
         </div>
@@ -50,18 +50,18 @@
                 <label for="role">Departamento / Perfil</label>
                 <select id="role" formControlName="roleId">
                     <option value="" disabled selected>Selecione seu cargo...</option>
-                    <option *ngFor="let role of rolesService.roles()" [value]="role.id">
+                    <option *ngFor="let role of rolesService.state().data" [value]="role.id">
                         {{ role.name }}
                     </option>
                 </select>
-                <div *ngIf="rolesService.loading()" class="error-message">
+                <div *ngIf="rolesService.state().loading" class="error-message">
                     <small style="color: var(--brand-secondary)">Sincronizando departamentos...</small>
                 </div>
             </div>
 
-            <button type="submit" [disabled]="form.invalid || usersService.loading()">
-                <span *ngIf="!usersService.loading()">Criar Conta Tickest</span>
-                <span *ngIf="usersService.loading()">Processando cadastro...</span>
+            <button type="submit" [disabled]="form.invalid || usersService.state().loading">
+                <span *ngIf="!usersService.state().loading">Criar Conta Tickest</span>
+                <span *ngIf="usersService.state().loading">Processando cadastro...</span>
             </button>
 
         </form>
