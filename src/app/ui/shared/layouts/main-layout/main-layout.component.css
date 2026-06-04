@@ -1,0 +1,91 @@
+.cursor-pointer { 
+  cursor: pointer; 
+}
+
+/* Ajustes básicos para simular o Sneat sem o CSS completo */
+.layout-wrapper { 
+  display: flex; 
+  width: 100%; 
+  min-height: 100vh; 
+}
+
+.layout-container { 
+  display: flex; 
+  flex: 1; 
+}
+
+.layout-menu { 
+  width: 260px; 
+  min-height: 100vh; 
+  border-right: 1px solid #e7e7ff; 
+  background: #fff; 
+}
+
+.layout-page { 
+  display: flex; 
+  flex: 1; 
+  flex-direction: column; 
+  background: #f5f5f9; 
+}
+
+.app-brand { 
+  padding: 1.5rem; 
+}
+
+.menu-inner { 
+  list-style: none; 
+  padding: 0.5rem; 
+}
+
+.menu-item { 
+  margin-bottom: 0.2rem; 
+}
+
+.menu-link { 
+  display: flex; 
+  align-items: center; 
+  padding: 0.625rem 1rem; 
+  color: #697a8d; 
+  text-decoration: none; 
+  border-radius: 0.375rem; 
+  transition: 0.3s; 
+}
+
+.menu-item.active .menu-link { 
+  background: rgba(105, 108, 255, 0.16) !important; 
+  color: #696cff; 
+  font-weight: 600; 
+}
+
+.menu-link:hover { 
+  background: rgba(105, 108, 255, 0.08); 
+  color: #696cff; 
+}
+
+.menu-icon { 
+  margin-right: 0.75rem; 
+  font-size: 1.25rem; 
+}
+
+.menu-header { 
+  padding: 1rem 1rem 0.5rem; 
+}
+
+.layout-navbar { 
+  margin: 1rem auto 0; 
+  padding: 0.5rem 1.5rem; 
+  border-radius: 0.375rem; 
+  box-shadow: 0 0 0.375rem 0.25rem rgba(161, 172, 184, 0.15); 
+}
+
+.avatar img { 
+  border-radius: 50%; 
+  width: 40px; 
+  height: 40px; 
+}
+
+@media (max-width: 1199px) { 
+  .layout-menu { 
+    display: none; 
+  } 
+}

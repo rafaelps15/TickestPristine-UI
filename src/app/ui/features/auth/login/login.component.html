@@ -1,0 +1,101 @@
+<div class="authentication-wrapper container-p-y px-4">
+  <div class="authentication-inner">
+    <!-- Login -->
+    <div class="card">
+      <div class="card-body">
+        <!-- Logo -->
+        <div class="app-brand">
+          <a class="app-brand-link">
+            <span class="app-brand-logo">
+              <!-- Placeholder para Logo ou Texto -->
+              <h2 class="fw-bold mb-0 text-primary">Tickest</h2>
+            </span>
+          </a>
+        </div>
+        <!-- /Logo -->
+        <h4 class="mb-2">Bem-vindo ao Tickest! 👋</h4>
+        <p class="mb-4">Faça o login para continuar</p>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-3">
+          
+          <div class="mb-3">
+            <label for="email" class="form-label">Insira o E-mail</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email" 
+              formControlName="email" 
+              placeholder="Insira seu e-mail" 
+              autofocus 
+              [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+            />
+            @if (form.get('email')?.errors?.['required']) {
+              <div class="invalid-feedback">
+                O e-mail é obrigatório.
+              </div>
+            }
+            @if (form.get('email')?.errors?.['email']) {
+              <div class="invalid-feedback">
+                Insira um e-mail válido.
+              </div>
+            }
+          </div>
+
+          <div class="mb-3 form-password-toggle">
+            <div class="d-flex justify-content-between">
+              <label class="form-label" for="password">Insira a senha</label>
+              <a href="javascript:void(0);">
+                <small>Esqueceu a senha?</small>
+              </a>
+            </div>
+            <div class="input-group input-group-merge">
+              <input 
+                [type]="showPassword() ? 'text' : 'password'" 
+                id="password" 
+                class="form-control" 
+                formControlName="password"
+                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+              />
+              <span class="input-group-text cursor-pointer" (click)="togglePassword()">
+                <i class="bx" [class.bx-show]="showPassword()" [class.bx-hide]="!showPassword()"></i>
+              </span>
+              @if (form.get('password')?.invalid && form.get('password')?.touched) {
+                <div class="invalid-feedback">
+                  A senha é obrigatória.
+                </div>
+              }
+            </div>
+          </div>
+
+          @if (authService.state().error) {
+            <div class="mb-3">
+              <div class="alert alert-danger py-2" role="alert">
+                {{ authService.state().error }}
+              </div>
+            </div>
+          }
+
+          <div class="mb-3">
+            <button 
+              class="btn btn-primary d-grid w-100" 
+              type="submit" 
+              [disabled]="form.invalid || authService.state().loading"
+            >
+              {{ authService.state().loading ? 'Entrando...' : 'Login' }}
+            </button>
+          </div>
+        </form>
+
+        <p class="text-center">
+          <span>Novo na plataforma?</span>
+          <a routerLink="/auth/register">
+            <span> Crie uma conta</span>
+          </a>
+        </p>
+
+      </div>
+    </div>
+    <!-- /Login -->
+  </div>
+</div>

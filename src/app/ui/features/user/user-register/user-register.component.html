@@ -1,69 +1,132 @@
-<div class="page-container">
-    <div class="brand-header">
-        <h1>Tickest</h1>
-        <p>Sistema de tickets e solicitações internas</p>
-    </div>
-
-    <div class="register-card">
-        <h2>Novo Cadastro</h2>
-
-        <div *ngIf="usersService.state().error" class="alert alert-error">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            {{ usersService.state().error }}
+<div class="authentication-wrapper container-p-y px-4">
+  <div class="authentication-inner">
+    <!-- Register -->
+    <div class="card">
+      <div class="card-body">
+        <!-- Logo -->
+        <div class="app-brand">
+          <a class="app-brand-link">
+            <span class="app-brand-logo">
+              <h2 class="fw-bold mb-0 text-primary">Tickest</h2>
+            </span>
+          </a>
         </div>
+        <!-- /Logo -->
+        <h4 class="mb-2">A aventura começa aqui 🚀</h4>
+        <p class="mb-4">Crie sua conta para gerenciar seus tickets de forma fácil!</p>
 
-        <div *ngIf="usersService.state().success" class="alert alert-success">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            Usuário cadastrado com sucesso!
-        </div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-3">
+          
+          <!-- Nome -->
+          <div class="mb-3">
+            <label for="name" class="form-label">Nome Completo</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="name" 
+              formControlName="name" 
+              placeholder="Ex: João Silva" 
+              autofocus 
+              [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+            />
+            <div class="invalid-feedback">O nome é obrigatório.</div>
+          </div>
 
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <!-- E-mail -->
+          <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email" 
+              formControlName="email" 
+              placeholder="seu@email.com" 
+              [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+            />
+            @if (form.get('email')?.errors?.['required']) {
+              <div class="invalid-feedback">O e-mail é obrigatório.</div>
+            }
+            @if (form.get('email')?.errors?.['email']) {
+              <div class="invalid-feedback">Insira um e-mail válido.</div>
+            }
+          </div>
 
-            <div class="form-group">
-                <label for="name">Nome Completo</label>
-                <input id="name" type="text" formControlName="name" placeholder="Ex: João Silva">
-                <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="error-message">
-                    <small>Nome é obrigatório (mín. 3 caracteres).</small>
-                </div>
+          <!-- Senha -->
+          <div class="mb-3 form-password-toggle">
+            <label class="form-label" for="password">Senha</label>
+            <div class="input-group input-group-merge">
+              <input 
+                [type]="showPassword() ? 'text' : 'password'" 
+                id="password" 
+                class="form-control" 
+                formControlName="password"
+                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+              />
+              <span class="input-group-text cursor-pointer" (click)="togglePassword()">
+                <i class="bx" [class.bx-show]="showPassword()" [class.bx-hide]="!showPassword()"></i>
+              </span>
+              <div class="invalid-feedback">
+                A senha deve ter pelo menos 8 caracteres, um caractere especial e letras/números.
+              </div>
             </div>
+          </div>
 
-            <div class="form-group">
-                <label for="email">E-mail Corporativo</label>
-                <input id="email" type="email" formControlName="email" placeholder="nome@empresa.com">
-                <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid" class="error-message">
-                    <small>Insira um e-mail corporativo válido.</small>
-                </div>
+          <!-- Cargo/Role -->
+          <div class="mb-3">
+            <label for="roleId" class="form-label">Cargo</label>
+            <select 
+              class="form-select" 
+              id="roleId" 
+              formControlName="roleId"
+              [class.is-invalid]="form.get('roleId')?.invalid && form.get('roleId')?.touched"
+            >
+              <option value="" disabled selected>Selecione seu cargo</option>
+              @for (role of rolesService.state().data; track role.id) {
+                <option [value]="role.id">
+                  {{ role.name }}
+                </option>
+              }
+            </select>
+            <div class="invalid-feedback">Selecione um cargo para continuar.</div>
+          </div>
+
+          <!-- Alertas de Erro/Sucesso -->
+          @if (usersService.state().error) {
+            <div class="mb-3">
+              <div class="alert alert-danger py-2" role="alert">
+                {{ usersService.state().error }}
+              </div>
             </div>
-
-            <div class="form-group">
-                <label for="password">Senha de Acesso</label>
-                <input id="password" type="password" formControlName="password" placeholder="Crie uma senha forte">
-                
-                <div *ngIf="form.get('password')?.touched && form.get('password')?.invalid" class="error-message">
-                    <small *ngIf="form.get('password')?.errors?.['required']">A senha é obrigatória.</small>
-                    <small *ngIf="form.get('password')?.errors?.['minlength']">Deve conter ao menos 8 caracteres.</small>
-                    <small *ngIf="form.get('password')?.errors?.['pattern']">Requer um caractere especial (!&#64;#$...).</small>
-                </div>
+          }
+          @if (usersService.state().success) {
+            <div class="mb-3">
+              <div class="alert alert-success py-2" role="alert">
+                Usuário criado com sucesso!
+              </div>
             </div>
+          }
 
-            <div class="form-group">
-                <label for="role">Departamento / Perfil</label>
-                <select id="role" formControlName="roleId">
-                    <option value="" disabled selected>Selecione seu cargo...</option>
-                    <option *ngFor="let role of rolesService.state().data" [value]="role.id">
-                        {{ role.name }}
-                    </option>
-                </select>
-                <div *ngIf="rolesService.state().loading" class="error-message">
-                    <small style="color: var(--brand-secondary)">Sincronizando departamentos...</small>
-                </div>
-            </div>
-
-            <button type="submit" [disabled]="form.invalid || usersService.state().loading">
-                <span *ngIf="!usersService.state().loading">Criar Conta Tickest</span>
-                <span *ngIf="usersService.state().loading">Processando cadastro...</span>
+          <div class="mb-3">
+            <button 
+              class="btn btn-primary d-grid w-100" 
+              type="submit" 
+              [disabled]="form.invalid || usersService.state().loading"
+            >
+              {{ usersService.state().loading ? 'Criando conta...' : 'Cadastrar' }}
             </button>
-
+          </div>
         </form>
+
+        <p class="text-center">
+          <span>Já possui uma conta?</span>
+          <a routerLink="/auth/login">
+            <span> Entre aqui</span>
+          </a>
+        </p>
+
+      </div>
     </div>
+    <!-- /Register -->
+  </div>
 </div>

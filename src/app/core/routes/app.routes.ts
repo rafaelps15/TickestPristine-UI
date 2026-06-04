@@ -14,10 +14,18 @@ export const routes: Routes = [
       .then(m => m.LoginComponent)
   },
   {
-    path: 'dashboard',
+    path: '',
     canActivate: [authGuard],
-    loadComponent: () => import('../../ui/features/dashboard/dashboard.component')
-      .then(m => m.DashboardComponent)
+    loadComponent: () => import('../../ui/shared/layouts/main-layout/main-layout.component')
+      .then(m => m.MainLayoutComponent),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('../../ui/features/dashboard/dashboard.component')
+          .then(m => m.DashboardComponent)
+      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
   },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
