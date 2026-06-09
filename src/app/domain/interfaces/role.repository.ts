@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
 import { Role } from '../entities/role.entity';
-import { ApiResult } from '../../infrastructure/models/api-result.dto';
+import { ApiResultDto } from '../../infrastructure/dtos/api-result.dto';
 
-/** Interface de domínio que define o contrato para o repositório de papéis (roles). */
+/** Contrato do repositório de papéis. */
 export abstract class RoleRepository {
-    abstract getAll(): Observable<ApiResult<Role[]>>;
+    abstract getAll(): Observable<ApiResultDto<Role[]>>;
 }

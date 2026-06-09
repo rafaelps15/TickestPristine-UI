@@ -3,7 +3,7 @@ import { RoleRepository } from "../../domain/interfaces/role.repository";
 import { Role } from "../../domain/entities/role.entity";
 import { finalize } from "rxjs";
 
-/** Serviço de aplicação para orquestração de operações relacionadas a papéis. */
+/** Serviço de papéis. */
 @Injectable({ providedIn: 'root' })
 export class RolesService {
   private readonly repository = inject(RoleRepository);
@@ -21,10 +21,10 @@ export class RolesService {
       .pipe(finalize(() => this.state.update(s => ({ ...s, loading: false }))))
       .subscribe({
         next: (res) => {
-          if (res.IsSuccess) {
+          if (res.isSuccess) {
             this.state.update(s => ({ ...s, data: res.value }));
           } else {
-            this.state.update(s => ({ ...s, error: res.errorResult.message }));
+            this.state.update(s => ({ ...s, error: res.errorResult?.message ?? 'Erro ao carregar papéis' }));
           }
         },
         error: () => this.state.update(s => ({ ...s, error: 'Erro ao carregar papéis' }))

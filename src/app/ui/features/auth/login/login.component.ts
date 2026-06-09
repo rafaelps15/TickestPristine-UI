@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../../../application/services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 
-/** Componente de UI para autenticação de usuários. */
+/** UI de autenticação. */
 @Component({
   selector: 'app-login',
   standalone: true,

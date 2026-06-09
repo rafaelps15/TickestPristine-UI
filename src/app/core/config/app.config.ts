@@ -11,6 +11,8 @@ import { UserRepository } from '../../domain/interfaces/user.repository';
 import { UserHttpRepository } from '../../infrastructure/repositories/user-http.repository';
 import { AuthRepository } from '../../domain/interfaces/auth.repository';
 import { AuthHttpRepository } from '../../infrastructure/repositories/auth-http.repository';
+import { TicketRepository } from '../../domain/interfaces/ticket.repository';
+import { TicketHttpRepository } from '../../infrastructure/repositories/ticket-http.repository';
 import { authInterceptor } from '../interceptors/auth.interceptor';
 
 /** Configuração global da aplicação. */
@@ -21,11 +23,11 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideAnimationsAsync(),
     provideHttpClient(
-      withFetch(),
       withInterceptors([authInterceptor])
     ),
     { provide: RoleRepository, useClass: RoleHttpRepository },
     { provide: UserRepository, useClass: UserHttpRepository },
-    { provide: AuthRepository, useClass: AuthHttpRepository }
+    { provide: AuthRepository, useClass: AuthHttpRepository },
+    { provide: TicketRepository, useClass: TicketHttpRepository }
   ]
 };

@@ -1,59 +1,114 @@
-<div class="row">
-  <div class="col-lg-8 mb-4 order-0">
-    <div class="card">
-      <div class="d-flex align-items-end row">
-        <div class="col-sm-7">
-          <div class="card-body">
-            <h5 class="card-title text-primary">Parabéns, Usuário! 🎉</h5>
-            <p class="mb-4">
-              Você resolveu <span class="fw-bold">72%</span> a mais de tickets hoje. Confira sua nova medalha no seu perfil.
-            </p>
-            <a href="javascript:;" class="btn btn-sm btn-outline-primary">Ver Estatísticas</a>
-          </div>
-        </div>
-        <div class="col-sm-5 text-center text-sm-start">
-          <div class="card-body pb-0 px-0 px-md-4">
-            <img
-              src="https://demos.themeselection.com/sneat-bootstrap-html-admin-template-free/assets/img/illustrations/man-with-laptop-light.png"
-              height="140"
-              alt="View Badge User"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col-lg-4 col-md-4 order-1">
-    <div class="row">
-      <div class="col-lg-6 col-md-12 col-6 mb-4">
-        <div class="card">
-          <div class="card-body">
-            <div class="card-title d-flex align-items-start justify-content-between">
-              <div class="avatar flex-shrink-0">
-                <i class="bx bx-check-circle text-success fs-3"></i>
-              </div>
-            </div>
-            <span class="fw-semibold d-block mb-1">Resolvidos</span>
-            <h3 class="card-title mb-2">126</h3>
-            <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> +12.5%</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6 col-md-12 col-6 mb-4">
-        <div class="card">
-          <div class="card-body">
-            <div class="card-title d-flex align-items-start justify-content-between">
-              <div class="avatar flex-shrink-0">
-                <i class="bx bx-time text-warning fs-3"></i>
-              </div>
-            </div>
-            <span>Pendentes</span>
-            <h3 class="card-title text-nowrap mb-1">12</h3>
-            <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i> -4.2%</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
+     1 <div class="dashboard-wrapper p-4 animate-fade-in">
+     2   <!-- Modern Summary Banner -->
+     3   <header class="row mb-5">
+     4     <div class="col-12">
+     5       <div class="card border-0 shadow-sm welcome-banner p-4">
+     6         <div class="d-flex justify-content-between align-items-center">
+     7           <div>
+     8             <h2 class="fw-bold text-primary">Service Insights</h2>
+     9             <p class="text-muted">Monitor and resolve your support queue efficiently.</p>
+    10           </div>
+    11           <div class="d-flex gap-4">
+    12             <div class="text-center px-3 border-end">
+    13               <span class="d-block smaller fw-bold text-muted">OPEN</span>
+    14               <span class="h3 fw-bold">{{ summary().openTickets }}</span>
+    15             </div>
+    16             <div class="text-center px-3">
+    17               <span class="d-block smaller fw-bold text-success">DONE</span>
+    18               <span class="h3 fw-bold text-success">{{ summary().completedThisMonth }}</span>
+    19             </div>
+    20           </div>
+    21         </div>
+    22       </div>
+    23     </div>
+    24   </header>
+    25
+    26   <!-- Ticket Management Table -->
+    27   <section class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    28     <div class="p-4 bg-white d-flex justify-content-between align-items-center border-bottom">
+    29       <h5 class="fw-bold mb-0">Active Tickets</h5>
+    30       <input type="text" class="form-control w-25 rounded-pill bg-light border-0 px-4" 
+    31              placeholder="Search reference..." [ngModel]="filterText()" (ngModelChange)="filterText.set($event)">
+    32     </div>
+    33
+    34     <div class="table-responsive">
+    35       <table class="table table-hover align-middle mb-0">
+    36         <thead class="bg-light-subtle smaller fw-bold text-muted">
+    37           <tr><th class="ps-4 py-3">ID</th><th>SUBJECT</th><th>DEPT</th><th>STATUS</th><th class="text-end pe-4">ACTION</th></tr>
+    38         </thead>
+    39         <tbody>
+    40           @for (t of filteredTickets(); track t.id) {
+    41             <tr>
+    42               <td class="ps-4 fw-bold text-primary">#{{ t.id }}</td>
+    43               <td>
+    44                 <div class="d-flex flex-column">
+    45                   <span class="fw-bold text-dark">{{ t.title }}</span>
+    46                   <span class="smaller text-muted">{{ t.priority }} Priority</span>
+    47                 </div>
+    48               </td>
+    49               <td><span class="badge bg-light text-dark border">{{ t.departmentDescription }}</span></td>
+    50               <td>
+    51                 <span class="status-pill" [attr.data-status]="t.status">{{ t.status }}</span>
+    52               </td>
+    53               <td class="text-end pe-4">
+    54                 <button class="btn btn-sm btn-primary rounded-pill px-4" 
+    55                         (click)="handleOpenTicket(t.id)" data-bs-toggle="modal" data-bs-target="#ticketModal">Details</button>
+    56               </td>
+    57             </tr>
+    58           }
+    59         </tbody>
+    60       </table>
+    61     </div>
+    62   </section>
+    63 </div>
+    64
+    65 <!-- Premium Detail Modal -->
+    66 <div class="modal fade" id="ticketModal" tabindex="-1">
+    67   <div class="modal-dialog modal-xl modal-dialog-centered">
+    68     @if (selectedTicket(); as t) {
+    69       <div class="modal-content border-0 shadow-lg rounded-5 overflow-hidden">
+    70         <div class="row g-0">
+    71           <!-- Ticket Info -->
+    72           <aside class="col-md-4 bg-light p-4 border-end" style="height: 600px;">
+    73             <div class="d-flex justify-content-between mb-4">
+    74               <span class="fw-bold text-primary">#{{ t.id }}</span>
+    75               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    76             </div>
+    77             <h4 class="fw-bold text-dark">{{ t.title }}</h4>
+    78             <p class="text-muted small">{{ t.description }}</p>
+    79             <hr class="my-4">
+    80             <div class="spec-group mb-3">
+    81               <label class="smaller fw-bold text-muted d-block mb-1">STATUS</label>
+    82               <select class="form-select border-0 shadow-sm" [value]="t.status" (change)="handleStatusUpdate(t.id, $any($event.target).value)">
+    83                 @for (s of TicketStatus | keyvalue; track s.key) { <option [value]="s.value">{{ s.value }}</option> }
+    84               </select>
+    85             </div>
+    86           </aside>
+    87           <!-- Chat Section -->
+    88           <main class="col-md-8 d-flex flex-column bg-white">
+    89             <div class="p-3 border-bottom"><h6 class="mb-0 fw-bold">Conversation History</h6></div>
+    90             <div class="flex-grow-1 p-4 overflow-auto bg-slate-50">
+    91               @for (m of currentMessages(); track m.id) {
+    92                 <div class="d-flex mb-3" [class.justify-content-end]="m.isMe">
+    93                   <div class="p-3 rounded-4 shadow-sm" [class.is-user-msg]="m.isMe" [class.is-other-msg]="!m.isMe">
+    94                     <div class="smaller fw-bold mb-1">{{ m.authorName }}</div>
+    95                     <div>{{ m.content }}</div>
+    96                     <div class="text-end smaller opacity-50 mt-1">{{ m.createdAt | date:'HH:mm' }}</div>
+    97                   </div>
+    98                 </div>
+    99               }
+   100             </div>
+   101             <div class="p-3 border-top">
+   102               <div class="input-group">
+   <input type="text" class="form-control border-0 bg-light rounded-pill px-4" 
+                          placeholder="Write response..." [ngModel]="chatInput()" (ngModelChange)="chatInput.set($event)" (keyup.enter)="handleSendMessage()">
+   105                 <button class="btn btn-primary rounded-circle ms-2" (click)="handleSendMessage()"><i class="bx bx-send"></i></button>
+   106               </div>
+   107             </div>
+   108           </main>
+   109         </div>
+   110       </div>
+   111     }
+   112   </div>
+   113 </div>

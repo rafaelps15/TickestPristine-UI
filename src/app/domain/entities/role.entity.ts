@@ -1,4 +1,4 @@
-/** Entidade de domínio que representa um papel (role) no sistema. */
+/** Entidade de papel (role). */
 export interface Role {
   id: number;
   name: string;

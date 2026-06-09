@@ -4,7 +4,7 @@ import { RolesService } from "../../../../application/services/roles.service";
 import { UsersService } from "../../../../application/services/users.service";
 import { RouterModule } from '@angular/router';
 
-/** Componente de UI para o registro de novos usuários. */
+/** UI de registro de usuários. */
 @Component({
     selector: 'app-user-register',
     standalone: true,

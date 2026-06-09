@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-/** Componente principal que atua como host das rotas da aplicação. */
+/** Componente host das rotas. */
 @Component({
   selector: 'app-root',
   standalone: true,

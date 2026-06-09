@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../guards/auth.guard';
 
-/** Definição de rotas da aplicação com proteção e carregamento sob demanda. */
+/** Definição de rotas do sistema. */
 export const routes: Routes = [
   {
     path: 'register',

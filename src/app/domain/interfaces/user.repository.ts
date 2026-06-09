@@ -1,8 +1,8 @@
 import { Observable } from "rxjs";
-import { CreateUserRequest } from "../../infrastructure/models/create-user-request.dto";
-import { ApiResult } from "../../infrastructure/models/api-result.dto";
+import { CreateUserRequestDto } from "../../infrastructure/dtos/create-user-request.dto";
+import { ApiResultDto } from "../../infrastructure/dtos/api-result.dto";
 
-/** Interface de domínio que define o contrato para o repositório de usuários. */
+/** Contrato do repositório de usuários. */
 export abstract class UserRepository {
-    abstract createUser(request: CreateUserRequest): Observable<ApiResult<void>>;
+    abstract createUser(request: CreateUserRequestDto): Observable<ApiResultDto<void>>;
 }

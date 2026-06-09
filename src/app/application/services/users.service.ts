@@ -1,9 +1,9 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { UserRepository } from "../../domain/interfaces/user.repository";
-import { CreateUserRequest } from "../../infrastructure/models/create-user-request.dto";
+import { CreateUserRequestDto } from "../../infrastructure/dtos/create-user-request.dto";
 import { finalize } from "rxjs";
 
-/** Serviço de aplicação para orquestração de operações relacionadas a usuários. */
+/** Serviço de usuários. */
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   private readonly repository = inject(UserRepository);
@@ -14,17 +14,17 @@ export class UsersService {
     error: null as string | null
   });
 
-  createUser(data: CreateUserRequest) {
+  createUser(data: CreateUserRequestDto) {
     this.state.update(s => ({ ...s, loading: true, success: false, error: null }));
 
     this.repository.createUser(data)
       .pipe(finalize(() => this.state.update(s => ({ ...s, loading: false }))))
       .subscribe({
         next: (res) => {
-          if (res.IsSuccess) {
+          if (res.isSuccess) {
             this.state.update(s => ({ ...s, success: true }));
           } else {
-            this.state.update(s => ({ ...s, error: res.errorResult.message }));
+            this.state.update(s => ({ ...s, error: res.errorResult?.message ?? 'Erro ao criar usuário' }));
           }
         },
         error: () => this.state.update(s => ({ ...s, error: 'Erro inesperado ao criar usuário' }))

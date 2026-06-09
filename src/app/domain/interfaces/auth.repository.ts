@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
-import { ApiResult } from '../../infrastructure/models/api-result.dto';
-import { loginRequest } from '../../infrastructure/models/login-request.dto';
+import { ApiResultDto } from '../../infrastructure/dtos/api-result.dto';
+import { LoginRequestDto } from '../../infrastructure/dtos/login-request.dto';
 
-/** Interface de domínio que define o contrato para as operações de autenticação. */
+/** Contrato do repositório de autenticação. */
 export abstract class AuthRepository {
-    abstract login(request: loginRequest): Observable<ApiResult<string>>;
+    abstract login(request: LoginRequestDto): Observable<ApiResultDto<string>>;
 }
