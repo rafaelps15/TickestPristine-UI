@@ -27,7 +27,26 @@ export class UsersService {
             this.state.update(s => ({ ...s, error: res.errorResult?.message ?? 'Erro ao criar usuário' }));
           }
         },
-        error: () => this.state.update(s => ({ ...s, error: 'Erro inesperado ao criar usuário' }))
+        error: (err) => {
+          console.error('Erro ao criar usuário:', err);
+
+          // Prioriza a mensagem de erro retornada pela API.
+          const apiMessage = err.error?.errorResult?.message || err.error?.message;
+          if (apiMessage) {
+            this.state.update(s => ({ ...s, error: apiMessage }));
+            return;
+          }
+
+          // Fallback para erros de conexão ou respostas genéricas.
+          let errorMessage = 'Ocorreu um erro inesperado ao tentar criar o usuário.';
+          if (err.status === 0) {
+            errorMessage = 'Sem conexão com o servidor.';
+          } else if (err.status === 409) {
+            errorMessage = 'Este e-mail já está cadastrado.';
+          }
+
+          this.state.update(s => ({ ...s, error: errorMessage }));
+        }
       });
   }
 

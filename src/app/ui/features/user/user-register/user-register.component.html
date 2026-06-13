@@ -1,132 +1,125 @@
-<div class="authentication-wrapper container-p-y px-4">
-  <div class="authentication-inner">
-    <!-- Register -->
-    <div class="card">
+<div class="row">
+  <div class="col-xl">
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Cadastrar Novo Colaborador</h5>
+        <small class="text-muted float-end">Dados Empresariais</small>
+      </div>
       <div class="card-body">
-        <!-- Logo -->
-        <div class="app-brand">
-          <a class="app-brand-link">
-            <span class="app-brand-logo">
-              <h2 class="fw-bold mb-0 text-primary">Tickest</h2>
-            </span>
-          </a>
-        </div>
-        <!-- /Logo -->
-        <h4 class="mb-2">A aventura começa aqui 🚀</h4>
-        <p class="mb-4">Crie sua conta para gerenciar seus tickets de forma fácil!</p>
-
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-3">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
           
-          <!-- Nome -->
-          <div class="mb-3">
-            <label for="name" class="form-label">Nome Completo</label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="name" 
-              formControlName="name" 
-              placeholder="Ex: João Silva" 
-              autofocus 
-              [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
-            />
-            <div class="invalid-feedback">O nome é obrigatório.</div>
-          </div>
-
-          <!-- E-mail -->
-          <div class="mb-3">
-            <label for="email" class="form-label">E-mail</label>
-            <input 
-              type="email" 
-              class="form-control" 
-              id="email" 
-              formControlName="email" 
-              placeholder="seu@email.com" 
-              [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
-            />
-            @if (form.get('email')?.errors?.['required']) {
-              <div class="invalid-feedback">O e-mail é obrigatório.</div>
-            }
-            @if (form.get('email')?.errors?.['email']) {
-              <div class="invalid-feedback">Insira um e-mail válido.</div>
-            }
-          </div>
-
-          <!-- Senha -->
-          <div class="mb-3 form-password-toggle">
-            <label class="form-label" for="password">Senha</label>
-            <div class="input-group input-group-merge">
-              <input 
-                [type]="showPassword() ? 'text' : 'password'" 
-                id="password" 
-                class="form-control" 
-                formControlName="password"
-                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
-              />
-              <span class="input-group-text cursor-pointer" (click)="togglePassword()">
-                <i class="bx" [class.bx-show]="showPassword()" [class.bx-hide]="!showPassword()"></i>
-              </span>
-              <div class="invalid-feedback">
-                A senha deve ter pelo menos 8 caracteres, um caractere especial e letras/números.
+          <div class="row">
+            <!-- Dados Básicos -->
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="name">Nome Completo</label>
+              <div class="input-group input-group-merge">
+                <span class="input-group-text"><i class="bx bx-user"></i></span>
+                <input type="text" class="form-control" id="name" formControlName="name" placeholder="Ex: João Silva"
+                  [class.is-invalid]="form.get('name')?.touched && form.get('name')?.invalid" />
               </div>
-            </div>
-          </div>
-
-          <!-- Cargo/Role -->
-          <div class="mb-3">
-            <label for="roleId" class="form-label">Cargo</label>
-            <select 
-              class="form-select" 
-              id="roleId" 
-              formControlName="roleId"
-              [class.is-invalid]="form.get('roleId')?.invalid && form.get('roleId')?.touched"
-            >
-              <option value="" disabled selected>Selecione seu cargo</option>
-              @for (role of rolesService.state().data; track role.id) {
-                <option [value]="role.id">
-                  {{ role.name }}
-                </option>
+              @if (form.get('name')?.touched && form.get('name')?.invalid) {
+                <div class="text-danger small mt-1">Nome é obrigatório (mín. 3 caracteres).</div>
               }
-            </select>
-            <div class="invalid-feedback">Selecione um cargo para continuar.</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="email">E-mail Corporativo</label>
+              <div class="input-group input-group-merge">
+                <span class="input-group-text"><i class="bx bx-envelope"></i></span>
+                <input type="email" id="email" class="form-control" formControlName="email" placeholder="joao.silva@empresa.com"
+                  [class.is-invalid]="form.get('email')?.touched && form.get('email')?.invalid" />
+              </div>
+              @if (form.get('email')?.touched && form.get('email')?.invalid) {
+                <div class="text-danger small mt-1">Informe um e-mail válido.</div>
+              }
+            </div>
           </div>
 
-          <!-- Alertas de Erro/Sucesso -->
-          @if (usersService.state().error) {
-            <div class="mb-3">
-              <div class="alert alert-danger py-2" role="alert">
-                {{ usersService.state().error }}
+          <div class="row">
+            <!-- Identificação Empresarial -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="employeeCode">Cód. Funcionário (RE)</label>
+              <div class="input-group input-group-merge">
+                <span class="input-group-text"><i class="bx bx-id-card"></i></span>
+                <input type="text" id="employeeCode" class="form-control" formControlName="employeeCode" placeholder="Ex: 12345"
+                  [class.is-invalid]="form.get('employeeCode')?.touched && form.get('employeeCode')?.invalid" />
               </div>
+              @if (form.get('employeeCode')?.touched && form.get('employeeCode')?.invalid) {
+                <div class="text-danger small mt-1">Código do funcionário é obrigatório.</div>
+              }
             </div>
-          }
-          @if (usersService.state().success) {
-            <div class="mb-3">
-              <div class="alert alert-success py-2" role="alert">
-                Usuário criado com sucesso!
-              </div>
-            </div>
-          }
 
-          <div class="mb-3">
-            <button 
-              class="btn btn-primary d-grid w-100" 
-              type="submit" 
-              [disabled]="form.invalid || usersService.state().loading"
-            >
-              {{ usersService.state().loading ? 'Criando conta...' : 'Cadastrar' }}
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="roleId">Perfil de Acesso</label>
+              <select class="form-select" id="roleId" formControlName="roleId"
+                [class.is-invalid]="form.get('roleId')?.touched && form.get('roleId')?.invalid">
+                <option value="">Selecione um perfil</option>
+                @for (role of rolesService.roles(); track role.id) {
+                  <option [value]="role.id">{{ role.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="password">Senha Inicial</label>
+              <div class="input-group input-group-merge">
+                <span class="input-group-text"><i class="bx bx-lock-alt"></i></span>
+                <input [type]="showPassword() ? 'text' : 'password'" id="password" class="form-control" formControlName="password" placeholder="············"
+                  [class.is-invalid]="form.get('password')?.touched && form.get('password')?.invalid" />
+                <span class="input-group-text cursor-pointer" (click)="togglePassword()">
+                  <i class="bx" [class.bx-hide]="!showPassword()" [class.bx-show]="showPassword()"></i>
+                </span>
+              </div>
+              @if (form.get('password')?.touched && form.get('password')?.invalid) {
+                <div class="text-danger small mt-1">Senha deve ter no mínimo 6 caracteres.</div>
+              }
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <h6 class="mb-3">Estrutura Organizacional (Opcional)</h6>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="departmentId">Departamento</label>
+              <select class="form-select" id="departmentId" formControlName="departmentId">
+                <option value="">Selecione o departamento</option>
+                <!-- Opcionalmente carregar via serviço -->
+              </select>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="sectorId">Setor</label>
+              <select class="form-select" id="sectorId" formControlName="sectorId">
+                <option value="">Selecione o setor</option>
+              </select>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label" for="specialtyId">Especialidade</label>
+              <select class="form-select" id="specialtyId" formControlName="specialtyId">
+                <option value="">Selecione a especialidade</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary me-2" [disabled]="usersService.state().loading">
+              @if (usersService.state().loading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              }
+              Cadastrar Colaborador
             </button>
+            <button type="reset" class="btn btn-outline-secondary">Limpar</button>
           </div>
+
+          @if (usersService.state().error) {
+            <div class="alert alert-danger mt-3" role="alert">
+              {{ usersService.state().error }}
+            </div>
+          }
         </form>
-
-        <p class="text-center">
-          <span>Já possui uma conta?</span>
-          <a routerLink="/auth/login">
-            <span> Entre aqui</span>
-          </a>
-        </p>
-
       </div>
     </div>
-    <!-- /Register -->
   </div>
 </div>

@@ -1,13 +1,9 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../guards/auth.guard';
+import { adminMasterGuard } from '../guards/admin-master.guard';
 
 /** Definição de rotas do sistema. */
 export const routes: Routes = [
-  {
-    path: 'register',
-    loadComponent: () => import('../../ui/features/user/user-register/user-register.component')
-      .then(m => m.UserRegisterComponent)
-  },
   {
     path: 'login',
     loadComponent: () => import('../../ui/features/auth/login/login.component')
@@ -23,6 +19,11 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('../../ui/features/dashboard/dashboard.component')
           .then(m => m.DashboardComponent)
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('../../ui/features/user/user-register/user-register.component')
+          .then(m => m.UserRegisterComponent)
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]

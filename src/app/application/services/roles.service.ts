@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from "@angular/core";
+import { computed, inject, Injectable, signal } from "@angular/core";
 import { RoleRepository } from "../../domain/interfaces/role.repository";
 import { Role } from "../../domain/entities/role.entity";
 import { finalize } from "rxjs";
@@ -14,6 +14,8 @@ export class RolesService {
     error: null as string | null
   });
 
+  roles = computed(() => this.state().data);
+
   loadRoles() {
     this.state.update(s => ({ ...s, loading: true, error: null }));
 
@@ -27,7 +29,10 @@ export class RolesService {
             this.state.update(s => ({ ...s, error: res.errorResult?.message ?? 'Erro ao carregar papéis' }));
           }
         },
-        error: () => this.state.update(s => ({ ...s, error: 'Erro ao carregar papéis' }))
+        error: (err) => {
+          console.error('Erro ao carregar papéis:', err);
+          this.state.update(s => ({ ...s, error: 'Não foi possível carregar os perfis de acesso.' }));
+        }
       });
   }
 }

@@ -1,11 +1,10 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, AfterViewInit, ElementRef, ViewChild, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../application/services/auth.service';
 import { Router } from '@angular/router';
-import { TicketsService } from '../../../application/services/tickets.service';
-import { TicketStatus } from '../../../domain/enums/ticket-status.enum';
-import { Ticket } from '../../../domain/models/ticket.model';
+
+declare var Chart: any;
 
 /** UI da área restrita. */
 @Component({
@@ -15,71 +14,98 @@ import { Ticket } from '../../../domain/models/ticket.model';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly ticketsService = inject(TicketsService);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  readonly TicketStatus = TicketStatus;
-  
-  // Estado local.
-  readonly filterText = signal('');
-  readonly selectedTicket = signal<Ticket | null>(null);
-  readonly currentMessages = signal<any[]>([]);
-  readonly chatInput = signal('');
+  @ViewChild('ticketChart') ticketChartCanvas!: ElementRef;
 
-  // Sinais vindos do serviço.
-  readonly tickets = this.ticketsService.tickets;
-  readonly openCount = this.ticketsService.openCount;
-
-  // Sumário para o banner.
-  readonly summary = computed(() => ({
-    openTickets: this.openCount(),
-    completedThisMonth: this.tickets().filter(t => t.status === TicketStatus.RESOLVED).length
-  }));
-
-  // Filtro reativo.
-  readonly filteredTickets = computed(() => {
-    const term = this.filterText().toLowerCase();
-    return this.tickets().filter(t =>
-      t.title.toLowerCase().includes(term) ||
-      t.id.toString().includes(term)
-    );
-  });
+  // Estatísticas Mockadas (serão substituídas por dados do back-end futuramente)
+  stats = {
+    total: 124,
+    open: 45,
+    pending: 12,
+    resolved: 67
+  };
 
   ngOnInit() {
-    this.ticketsService.loadTickets();
+    // Inicialização futura aqui
+  }
+
+  ngAfterViewInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.initChart();
+    }
+  }
+
+  private initChart() {
+    const ctx = this.ticketChartCanvas.nativeElement.getContext('2d');
+    
+    // Gradiente para o gráfico
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(105, 108, 255, 0.5)');
+    gradient.addColorStop(1, 'rgba(105, 108, 255, 0)');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
+        datasets: [{
+          label: 'Tickets Criados',
+          data: [65, 59, 80, 81, 56, 55, 70],
+          borderColor: '#696cff',
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointBackgroundColor: '#696cff',
+          borderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: '#fff',
+            titleColor: '#566a7f',
+            bodyColor: '#566a7f',
+            borderColor: '#e7e7ff',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              display: true,
+              color: '#f0f2f5'
+            },
+            ticks: {
+              color: '#a1acb8'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#a1acb8'
+            }
+          }
+        }
+      }
+    });
   }
 
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
-  }
-
-  handleOpenTicket(id: number) {
-    const ticket = this.tickets().find(t => t.id === id);
-    this.selectedTicket.set(ticket || null);
-    // TODO: Carregar mensagens se necessário via serviço
-    this.currentMessages.set([]); 
-  }
-
-  handleStatusUpdate(id: number, status: string) {
-    this.ticketsService.changeTicketStatus(id, status as TicketStatus);
-  }
-
-  handleSendMessage() {
-    if (!this.chatInput().trim()) return;
-    
-    // TODO: Implementar envio de mensagem via serviço
-    const newMessage = {
-      id: Date.now(),
-      content: this.chatInput(),
-      authorName: 'Me',
-      isMe: true,
-      createdAt: new Date()
-    };
-
-    this.currentMessages.update(msgs => [...msgs, newMessage]);
-    this.chatInput.set('');
   }
 }

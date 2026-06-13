@@ -25,18 +25,54 @@ export class AuthService {
       .pipe(finalize(() => this.state.update(s => ({ ...s, loading: false }))))
       .subscribe({
         next: (res) => {
+          console.log('Resposta do login:', res);
           if (res.isSuccess) {
-            this.session.saveSession(res.value);
+            let token = res.value;
+            
+            // Se o value for um objeto, tenta pegar a propriedade 'token' ou similar
+            if (token && typeof token === 'object') {
+              token = (token as any).token || (token as any).accessToken || (token as any).value;
+              console.log('Token extraído do objeto:', token);
+            }
+
+            if (typeof token !== 'string') {
+              console.error('Não foi possível extrair uma string de token da resposta.', res.value);
+              this.state.update(s => ({ ...s, error: 'Erro ao processar login do servidor.' }));
+              return;
+            }
+
+            this.session.saveSession(token);
+            console.log('Sessão salva. Autenticado?', this.session.isAuthenticated());
+            
             this.router.navigate(['/dashboard']);
           } else {
             console.error('Falha no login:', res.errorResult);
-            this.state.update(s => ({ ...s, error: res.errorResult?.message ?? 'Erro na autenticação' }));
+            this.state.update(s => ({ ...s, error: res.errorResult?.message ?? 'E-mail ou senha incorretos' }));
           }
         },
         error: (err) => {
-          console.error('Erro de rede ou servidor:', err);
-          const status = err.status ? ` (Status: ${err.status})` : '';
-          this.state.update(s => ({ ...s, error: `Erro inesperado na autenticação${status}` }));
+          console.error('Erro de autenticação:', err);
+          
+          // Tenta extrair a mensagem de erro da resposta da API.
+          const apiMessage = err.error?.errorResult?.message || err.error?.message;
+          
+          if (apiMessage) {
+            this.state.update(s => ({ ...s, error: apiMessage }));
+            return;
+          }
+
+          // Mensagens de fallback para falhas de rede ou respostas sem corpo.
+          let errorMessage = 'Ocorreu um erro inesperado. Tente novamente.';
+          
+          if (err.status === 0) {
+            errorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
+          } else if (err.status === 401) {
+            errorMessage = 'E-mail ou senha incorretos.';
+          } else if (err.status === 500) {
+            errorMessage = 'Erro interno no servidor.';
+          }
+
+          this.state.update(s => ({ ...s, error: errorMessage }));
         }
       });
   }
