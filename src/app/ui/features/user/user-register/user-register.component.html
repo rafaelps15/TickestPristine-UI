@@ -1,125 +1,98 @@
-<div class="row">
-  <div class="col-xl">
-    <div class="card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Cadastrar Novo Colaborador</h5>
-        <small class="text-muted float-end">Dados Empresariais</small>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          
-          <div class="row">
-            <!-- Dados Básicos -->
-            <div class="col-md-6 mb-3">
-              <label class="form-label" for="name">Nome Completo</label>
-              <div class="input-group input-group-merge">
-                <span class="input-group-text"><i class="bx bx-user"></i></span>
-                <input type="text" class="form-control" id="name" formControlName="name" placeholder="Ex: João Silva"
-                  [class.is-invalid]="form.get('name')?.touched && form.get('name')?.invalid" />
-              </div>
-              @if (form.get('name')?.touched && form.get('name')?.invalid) {
-                <div class="text-danger small mt-1">Nome é obrigatório (mín. 3 caracteres).</div>
-              }
-            </div>
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="d-flex align-items-center justify-content-between">
+      <h4 class="fw-bold py-3 mb-0"><span class="text-muted fw-light">Gestão /</span> Usuários</h4>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegister">
+        <i class="bx bx-plus me-1"></i> Novo Usuário
+      </button>
+    </div>
+  </div>
+</div>
 
-            <div class="col-md-6 mb-3">
-              <label class="form-label" for="email">E-mail Corporativo</label>
-              <div class="input-group input-group-merge">
-                <span class="input-group-text"><i class="bx bx-envelope"></i></span>
-                <input type="email" id="email" class="form-control" formControlName="email" placeholder="joao.silva@empresa.com"
-                  [class.is-invalid]="form.get('email')?.touched && form.get('email')?.invalid" />
+<!-- Tabela de Usuários -->
+<div class="card">
+  <h5 class="card-header">Listagem de Usuários</h5>
+  <div class="table-responsive text-nowrap">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody class="table-border-bottom-0">
+        @for (user of usersService.users(); track user.id) {
+          <tr>
+            <td><strong>{{ user.employeeCode }}</strong></td>
+            <td>{{ user.name }}</td>
+            <td>
+              <div class="dropdown">
+                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                  <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-edit-alt me-1"></i> Editar</a>
+                  <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-trash me-1"></i> Excluir</a>
+                </div>
               </div>
-              @if (form.get('email')?.touched && form.get('email')?.invalid) {
-                <div class="text-danger small mt-1">Informe um e-mail válido.</div>
-              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal de Cadastro -->
+<div class="modal fade" id="modalRegister" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalRegisterTitle">Cadastrar Novo Usuário</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col mb-3">
+              <label for="name" class="form-label">Nome</label>
+              <input type="text" id="name" class="form-control" placeholder="Digite o nome completo" formControlName="name" />
             </div>
           </div>
-
-          <div class="row">
-            <!-- Identificação Empresarial -->
-            <div class="col-md-4 mb-3">
-              <label class="form-label" for="employeeCode">Cód. Funcionário (RE)</label>
-              <div class="input-group input-group-merge">
-                <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-                <input type="text" id="employeeCode" class="form-control" formControlName="employeeCode" placeholder="Ex: 12345"
-                  [class.is-invalid]="form.get('employeeCode')?.touched && form.get('employeeCode')?.invalid" />
-              </div>
-              @if (form.get('employeeCode')?.touched && form.get('employeeCode')?.invalid) {
-                <div class="text-danger small mt-1">Código do funcionário é obrigatório.</div>
-              }
+          <div class="row g-2">
+            <div class="col mb-3">
+              <label for="employeeCode" class="form-label">Código do funcionário</label>
+              <input type="text" id="employeeCode" class="form-control" placeholder="RE / Matrícula" formControlName="employeeCode" />
             </div>
-
-            <div class="col-md-4 mb-3">
-              <label class="form-label" for="roleId">Perfil de Acesso</label>
-              <select class="form-select" id="roleId" formControlName="roleId"
-                [class.is-invalid]="form.get('roleId')?.touched && form.get('roleId')?.invalid">
-                <option value="">Selecione um perfil</option>
+            <div class="col mb-3">
+              <label for="email" class="form-label">E-mail</label>
+              <input type="email" id="email" class="form-control" placeholder="exemplo&#64;empresa.com" formControlName="email" />
+            </div>
+          </div>
+          <div class="row g-2">
+            <div class="col mb-3">
+              <label for="password" class="form-label">Senha</label>
+              <input type="password" id="password" class="form-control" placeholder="············" formControlName="password" />
+            </div>
+            <div class="col mb-3">
+              <label for="roleId" class="form-label">Role</label>
+              <select id="roleId" class="form-select" formControlName="roleId">
+                <option value="">Selecione...</option>
                 @for (role of rolesService.roles(); track role.id) {
                   <option [value]="role.id">{{ role.name }}</option>
                 }
               </select>
             </div>
-
-            <div class="col-md-4 mb-3">
-              <label class="form-label" for="password">Senha Inicial</label>
-              <div class="input-group input-group-merge">
-                <span class="input-group-text"><i class="bx bx-lock-alt"></i></span>
-                <input [type]="showPassword() ? 'text' : 'password'" id="password" class="form-control" formControlName="password" placeholder="············"
-                  [class.is-invalid]="form.get('password')?.touched && form.get('password')?.invalid" />
-                <span class="input-group-text cursor-pointer" (click)="togglePassword()">
-                  <i class="bx" [class.bx-hide]="!showPassword()" [class.bx-show]="showPassword()"></i>
-                </span>
-              </div>
-              @if (form.get('password')?.touched && form.get('password')?.invalid) {
-                <div class="text-danger small mt-1">Senha deve ter no mínimo 6 caracteres.</div>
-              }
-            </div>
           </div>
-
-          <hr class="my-4">
-          <h6 class="mb-3">Estrutura Organizacional (Opcional)</h6>
-
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label" for="departmentId">Departamento</label>
-              <select class="form-select" id="departmentId" formControlName="departmentId">
-                <option value="">Selecione o departamento</option>
-                <!-- Opcionalmente carregar via serviço -->
-              </select>
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <label class="form-label" for="sectorId">Setor</label>
-              <select class="form-select" id="sectorId" formControlName="sectorId">
-                <option value="">Selecione o setor</option>
-              </select>
-            </div>
-
-            <div class="col-md-4 mb-3">
-              <label class="form-label" for="specialtyId">Especialidade</label>
-              <select class="form-select" id="specialtyId" formControlName="specialtyId">
-                <option value="">Selecione a especialidade</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <button type="submit" class="btn btn-primary me-2" [disabled]="usersService.state().loading">
-              @if (usersService.state().loading) {
-                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-              }
-              Cadastrar Colaborador
-            </button>
-            <button type="reset" class="btn btn-outline-secondary">Limpar</button>
-          </div>
-
-          @if (usersService.state().error) {
-            <div class="alert alert-danger mt-3" role="alert">
-              {{ usersService.state().error }}
-            </div>
-          }
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

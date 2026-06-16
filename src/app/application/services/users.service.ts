@@ -1,6 +1,7 @@
-import { inject, Injectable, signal } from "@angular/core";
+import { inject, Injectable, signal, computed } from "@angular/core";
 import { UserRepository } from "../../domain/interfaces/user.repository";
 import { CreateUserRequestDto } from "../../infrastructure/dtos/create-user-request.dto";
+import { UserSummary } from "../../domain/models/user-summary.model";
 import { finalize } from "rxjs";
 
 /** Serviço de usuários. */
@@ -9,10 +10,32 @@ export class UsersService {
   private readonly repository = inject(UserRepository);
 
   state = signal({
+    data: [] as UserSummary[],
     loading: false,
     success: false,
     error: null as string | null
   });
+
+  users = computed(() => this.state().data);
+
+  loadUsers() {
+    this.state.update(s => ({ ...s, loading: true, error: null }));
+    this.repository.getAll()
+      .pipe(finalize(() => this.state.update(s => ({ ...s, loading: false }))))
+      .subscribe({
+        next: (res) => {
+          if (res.isSuccess) {
+            this.state.update(s => ({ ...s, data: res.value }));
+          } else {
+            this.state.update(s => ({ ...s, error: res.errorResult?.message ?? 'Erro ao carregar usuários' }));
+          }
+        },
+        error: (err) => {
+          console.error('Erro ao carregar usuários:', err);
+          this.state.update(s => ({ ...s, error: 'Erro de conexão ao carregar usuários' }));
+        }
+      });
+  }
 
   createUser(data: CreateUserRequestDto) {
     this.state.update(s => ({ ...s, loading: true, success: false, error: null }));

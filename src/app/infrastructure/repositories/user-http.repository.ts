@@ -4,6 +4,8 @@ import { UserRepository } from '../../domain/interfaces/user.repository';
 import { CreateUserRequestDto } from '../dtos/create-user-request.dto';
 import { ApiResultDto } from '../dtos/api-result.dto';
 
+import { UserSummary } from '../../domain/models/user-summary.model';
+
 /** Implementação HTTP do repositório de usuários. */
 @Injectable({ providedIn: 'root' })
 export class UserHttpRepository extends UserRepository {
@@ -12,5 +14,9 @@ export class UserHttpRepository extends UserRepository {
 
     createUser(request: CreateUserRequestDto) {
         return this.http.post<ApiResultDto<void>>(this.apiUrl, request);
+    }
+
+    getAll() {
+        return this.http.get<ApiResultDto<UserSummary[]>>(this.apiUrl);
     }
 }
